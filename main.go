@@ -21,7 +21,7 @@ func main() {
 	if port == "" {
 		port = "3000"
 	}
-	http.HandleFunc("/api" / PostsHandler)
+	http.HandleFunc("/api", PostsHandler)
 	log.Println("listening on http://localhost:" + port)
 	http.ListenAndServe(":"+port, nil)
 }
@@ -32,7 +32,19 @@ func PostsHandler(res http.ResponseWriter, req *http.Request) {
 
 	GetJSON(url, &posts)
 
-	data := string(json.Marshal(posts))
-	log.Println("%s request from %s", req.Method, req.URL.Path)
-	fmt.Fprintf(res, "%+v", data)
+	data, _ := json.Marshal(posts)
+
+	log.Printf("getting %s requests from %s", req.Method, req.URL)
+	fmt.Fprintf(res, "%+v", string(data))
+}
+
+func GetJSON(url string, target interface{}) error {
+	resp, err := http.Get(url)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	return json.NewDecoder(resp.Body).Decode(target)
 }
