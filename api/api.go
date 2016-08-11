@@ -16,3 +16,7 @@ func GetJSON(url string, target interface{}) error {
 
 	return json.NewDecoder(resp.Body).Decode(target)
 }
+
+func GetJsonResponse(target interface{}) ([]byte, error) {
+	return json.MarshalIndent(target, "", "  ")
+}
