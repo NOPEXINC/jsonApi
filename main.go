@@ -18,12 +18,12 @@ type Post struct {
 }
 
 type Food struct {
-	Price Price
+	Price Price `json:"prices"`
 }
 
 type Price struct {
-	Fruits     Fruit
-	Vegetables Vegetable
+	Fruits     Fruit     `json:"fruits"`
+	Vegetables Vegetable `json:"vegetables"`
 }
 
 type Fruit map[string]int
