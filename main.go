@@ -2,6 +2,7 @@
 package main
 
 import (
+	"./api"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -19,7 +20,7 @@ type Post struct {
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "3000"
+		port = "4000"
 	}
 	http.HandleFunc("/api", PostsHandler)
 	log.Println("listening on http://localhost:" + port)
@@ -30,21 +31,10 @@ func PostsHandler(res http.ResponseWriter, req *http.Request) {
 	url := "https://jsonplaceholder.typicode.com/posts"
 	posts := make([]Post, 0)
 
-	GetJSON(url, &posts)
+	api.GetJSON(url, &posts)
 
-	data, _ := json.Marshal(posts)
+	data, _ := json.MarshalIndent(posts, "", "   ")
 
-	log.Printf("getting %s requests from %s", req.Method, req.URL)
+	log.Printf("accepting %s requests from http://localhost:4000%s", req.Method, req.URL)
 	fmt.Fprintf(res, "%+v", string(data))
-}
-
-func GetJSON(url string, target interface{}) error {
-	resp, err := http.Get(url)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
-
-	return json.NewDecoder(resp.Body).Decode(target)
 }
