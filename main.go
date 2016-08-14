@@ -44,7 +44,9 @@ func PostsHandler(res http.ResponseWriter, req *http.Request) {
 	url := "https://jsonplaceholder.typicode.com/posts"
 	posts := make([]Post, 0)
 
-	api.GetJSON(url, &posts)
+	if err := api.GetJSON(url, &posts); err != nil {
+		log.Fatal(err)
+	}
 
 	data, _ := json.MarshalIndent(posts, "", "   ")
 
