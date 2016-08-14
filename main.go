@@ -17,6 +17,14 @@ type Post struct {
 	Body   string `json:"body"`
 }
 
+type Tour struct {
+	Title  string `json:"packageTitle"`
+	Name   string `json:"name"`
+	Blurb  string `json:"blurb"`
+	Price  string `json:"price"`
+	Region string `json:"region"`
+}
+
 type Food struct {
 	Price Price `json:"prices"`
 }
@@ -29,15 +37,17 @@ type Price struct {
 type Fruit map[string]int
 type Vegetable map[string]int
 
+var PORT string = os.Getenv("PORT")
+
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "4000"
+	if PORT == "" {
+		PORT = "4000"
 	}
 	http.HandleFunc("/api", PostsHandler)
 	http.HandleFunc("/prices", PriceHandler)
-	log.Println("listening on http://localhost:" + port)
-	http.ListenAndServe(":"+port, nil)
+	http.HandleFunc("/tours", ToursHandler)
+	log.Println("listening on http://localhost:" + PORT)
+	http.ListenAndServe(":"+PORT, nil)
 }
 
 func PostsHandler(res http.ResponseWriter, req *http.Request) {
@@ -50,7 +60,19 @@ func PostsHandler(res http.ResponseWriter, req *http.Request) {
 
 	data, _ := json.MarshalIndent(posts, "", "   ")
 
-	log.Printf("accepting %s requests from http://localhost:4000%s", req.Method, req.URL)
+	log.Printf("accepting %s requests from http://localhost:%s%s", req.Method, PORT, req.URL)
+	fmt.Fprintf(res, "%+v", string(data))
+}
+
+func ToursHandler(res http.ResponseWriter, req *http.Request) {
+	url := "http://services.explorecalifornia.org/json/tours.php"
+	tours := make([]Tour, 0)
+
+	if err := api.GetJSON(url, &tours); err != nil {
+		log.Fatal(err)
+	}
+	data, _ := json.MarshalIndent(tours, "", "  ")
+	log.Printf("accepting %s requests from http://localhost:%s%s", req.Method, PORT, req.URL)
 	fmt.Fprintf(res, "%+v", string(data))
 }
 
@@ -75,6 +97,6 @@ func PriceHandler(res http.ResponseWriter, req *http.Request) {
 		log.Fatal(err)
 	}
 
-	log.Printf("accepting %s requests from http://localhost:4000%s", req.Method, req.URL)
+	log.Printf("accepting %s requests from http://localhost:%s%s", req.Method, PORT, req.URL)
 	fmt.Fprintf(res, "%+v", string(response))
 }
