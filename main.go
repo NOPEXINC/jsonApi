@@ -60,6 +60,7 @@ func PostsHandler(res http.ResponseWriter, req *http.Request) {
 
 	data, _ := json.MarshalIndent(posts, "", "   ")
 
+	res.Header().Set("Content-Type", "text/json")
 	log.Printf("accepting %s requests from http://localhost:%s%s", req.Method, PORT, req.URL)
 	fmt.Fprintf(res, "%+v", string(data))
 }
@@ -72,6 +73,7 @@ func ToursHandler(res http.ResponseWriter, req *http.Request) {
 		log.Fatal(err)
 	}
 	data, _ := json.MarshalIndent(tours, "", "  ")
+	res.Header().Set("Content-Type", "text/json")
 	log.Printf("accepting %s requests from http://localhost:%s%s", req.Method, PORT, req.URL)
 	fmt.Fprintf(res, "%+v", string(data))
 }
@@ -97,6 +99,7 @@ func PriceHandler(res http.ResponseWriter, req *http.Request) {
 		log.Fatal(err)
 	}
 
+	res.Header().Set("Content-Type", "text/json")
 	log.Printf("accepting %s requests from http://localhost:%s%s", req.Method, PORT, req.URL)
 	fmt.Fprintf(res, "%+v", string(response))
 }
